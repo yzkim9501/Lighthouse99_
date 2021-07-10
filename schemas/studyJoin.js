@@ -7,6 +7,9 @@ const studyJoinSchema = new Schema({
   userId:{
     type:Number
   },
+  userName:{
+    type:String
+  },
   leader:{
     type:Boolean
   }
