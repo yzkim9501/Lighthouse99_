@@ -1,7 +1,6 @@
 {
-  "name": "Lighthouse99",
+  "name": "lighthouse99",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yzkim9501/Lighthouse99_.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yzkim9501/Lighthouse99_/issues"
+  },
+  "homepage": "https://github.com/yzkim9501/Lighthouse99_#readme",
+  "description": ""
 }
