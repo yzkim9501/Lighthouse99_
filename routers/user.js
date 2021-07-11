@@ -74,11 +74,12 @@ router.post("/register",async(req,res)=>{
     if(recentUserId.length!=0){
          userId=recentUserId[0]['userId']+1 }
 
-    const user = new Users({userId, email, nickname, group, password});
+    const user = new User({userId, email, nickname, group, password});
     await user.save();
 
     res.send({ result: "success" });
     } catch (err){
+        console.log(err)
     res.send({result:"formatError"}) //joi값에 맞지않을때
     }
     });
@@ -107,8 +108,8 @@ router.post("/login", async(req, res)=>{
 
 //내 정보 간단조회
 router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{
-    const userId = req.params;
-    const user= await User.findOne({userId}).exec();
+    const {userId}= req.params;
+    const user= await User.findOne({userId:userId}).exec();
     
     const email = user.email;
     const nickname = user.nickname;
@@ -123,7 +124,7 @@ router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{
 
 //참여중인 스터디 확인
 router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{
-    const userId = req.params;
+    const {userId} = req.params;
     const studyInfo= await StudyJoin.find({userId}).exec();
         res.json({
             studyInfo: studyInfo,
@@ -134,7 +135,7 @@ router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{
 //로그인 정보 수정
 
 router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
-    const userId = req.params;
+    const {userId} = req.params;
     const{nickname, password, confirmPassword} = req.body;
     
     if (password !== confirmPassword){
@@ -161,7 +162,7 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
 
 //내가 쓴 글 조회
 router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
-    const userId = req.params;
+    const {userId} = req.params;
     const myPost =  await Board.find({userId}).exec();
     
     res.send({
@@ -172,7 +173,7 @@ router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
 
 //내가 쓴 댓글 조회
 router.get("/mycomment/:userId", authMiddleware, async(req, res) => {
-    const userId = req.params;
+    const {userId} = req.params;
     const myComment = await BoardComment.find({userId}).exec();
 
     res.send({
