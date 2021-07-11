@@ -27,10 +27,11 @@ router.post("/study",async(req,res)=>{
       studyId=recentStudy[0]['studyId']+1
   }
   const { name, schedule, startDate, endJoinDate, size, explain, joinLater, userId, level, studyType, joinNum } = req.body;
-  // 날짜를 포맷을 변경해줘야하므로 const 대신 let으로 선언해준다. (21-07-10 추가)
+  // 날짜의 포맷을 변경해줘야하므로 const 대신 let으로 선언해준다. (21-07-10 추가)
   let { writeDate } = req.body;
   writeDate=(new Date().format("yyyy-MM-dd a/p hh:mm:ss"))
   await Study.create({ studyId, name, schedule, startDate, endJoinDate, writeDate, size, explain, joinLater, userId, level, studyType, joinNum });
+  
   res.send({ result: "success" });
 })
 
@@ -39,6 +40,7 @@ router.post("/study",async(req,res)=>{
 router.get("/study/:studyId", async (req, res) => {
   const { studyId } = req.params;
   studyDetail = await Study.find({ studyId });
+  
   res.send({ detail: studyDetail });
 })
 
@@ -48,6 +50,7 @@ router.put("/study/:studyId", async (req, res) => {
     const { studyId } = req.params;
     const {name,schedule,startDate,endJoinDate,writeDate,size,explain,joinLater,userId,level,studyType,joinNum} = req.body;
     await Study.updateOne({ studyId }, { $set: { name,schedule,startDate,endJoinDate,size,explain,joinLater,userId,level,studyType,joinNum } });
+    
     res.send({ result: "success" });
 })
 
@@ -87,7 +90,6 @@ router.post("/join-study/:studyId", async (req, res) => {
         return;
       }
 
-
       // 신청자의 user Id 기준으로 user db에서 nickname 가져오기 (21-07-10 추가)
       const nickname = await User.findOne({ userId },{ nickname : 1, _id: 0});
       const userName = nickname.nickname
@@ -96,7 +98,6 @@ router.post("/join-study/:studyId", async (req, res) => {
       await Study.updateOne({ studyId },  { $inc: { joinNum: 1 }});
       await StudyJoin.create({ studyId, userId, userName, leader });
       studyMemberInfo = await StudyJoin.find({studyId})
-
       
       res.send({"currentMemberCnt":studyMemberInfo.length,"studyMemberInfo":studyMemberInfo})
   
@@ -111,15 +112,12 @@ router.delete("/join-study/:studyId", async (req, res) => {
   const { studyId } = req.params;
   const { userId } = req.body;
 
-  const cur_comment = await StudyJoin.findOne({
+  const cur_study = await StudyJoin.findOne({
     $and: [{ studyId }, { userId }],
   });
 
-  // console.log(cur_comment)
-  // console.log(cur_comment._id)
-
-  if (cur_comment) {
-    await StudyJoin.deleteOne({ _id: cur_comment._id });
+  if (cur_study) {
+    await StudyJoin.deleteOne({ _id: cur_study._id });
     // 스터디 참여 인원 수 내리기
     await Study.updateOne({ studyId },  { $inc: { joinNum: -1 }})
   }
@@ -165,6 +163,7 @@ router.get("/study-comment/:studyCommentId", async (req, res) => {
 router.post('/study-comment', async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
   let studyCommentId=1;
+
   if(recentComment.length!=0){
     console.log(recentComment)
     studyCommentId = recentComment[0]['studyCommentId']+1
