@@ -106,15 +106,25 @@ router.post("/join-study/:studyId", async (req, res) => {
     }
 });
 
-// 스터디 탈퇴 (21-07-10 추가 나중에...테스트할예쩡...)
+// 스터디 탈퇴 (테스트 완료 2021-07-11)
 router.delete("/join-study/:studyId", async (req, res) => {
   const { studyId } = req.params;
   const { userId } = req.body;
 
-  await StudyJoin.deleteOne({ studyId, userId });
-  
-  // 스터디 참여 인원 수 내리기
-  await Study.updateOne({ studyId },  { $inc: { joinNum: -1 }});
+  const cur_comment = await StudyJoin.findOne({
+    $and: [{ studyId }, { userId }],
+  });
+
+  // console.log(cur_comment)
+  // console.log(cur_comment._id)
+
+  if (cur_comment) {
+    await StudyJoin.deleteOne({ _id: cur_comment._id });
+    // 스터디 참여 인원 수 내리기
+    await Study.updateOne({ studyId },  { $inc: { joinNum: -1 }})
+  }
+
+  res.send({ result: "success" })
 
 });
 
