@@ -21,11 +21,7 @@ const registerSchema = Joi.object({
     password: Joi.string()
         .alphanum()
         .min(4),
-    
-    confirmPassword: Joi.string()
-        .alphanum()
-        .min(4),
-    
+        
     group: Joi.number()
         .integer()
         .min(1)
@@ -37,14 +33,8 @@ const registerSchema = Joi.object({
 //회원가입 API
 router.post("/register",async(req,res)=>{
     try{
-        const{email, nickname, group, password,confirmPassword} = await registerSchema.validateAsync(req.body)  
+        const{email, nickname, group, password} = await registerSchema.validateAsync(req.body)  
 
-    if (password !== confirmPassword){
-        res.send({
-            result: "passwordError"
-        })
-        return;
-    }
     
     const localPart = email.split('@')[0]
     if (password.includes(localPart)){
