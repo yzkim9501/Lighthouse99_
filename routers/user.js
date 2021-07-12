@@ -21,11 +21,7 @@ const registerSchema = Joi.object({
     password: Joi.string()
         .alphanum()
         .min(4),
-    
-    confirmPassword: Joi.string()
-        .alphanum()
-        .min(4),
-    
+        
     group: Joi.number()
         .integer()
         .min(1)
