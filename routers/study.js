@@ -9,7 +9,11 @@ const StudyJoin = require("../schemas/studyJoin");
 // 진행 중/ 완료된 스터디 목록 조회 
 router.get("/study", async (req, res, next) => {
     try {
-      const studys = await Study.find({ }).sort("-date");
+      const studys = await Study.find({ }).sort("-date").lean();
+      for(let i=0;i<studys.length;i++){
+        const leader = await User.findOne({userId:studys[i]['userId']})
+        studys[i]['leaderName']=leader['nickname']
+      }
       res.json({ studys: studys });
     } catch (err) {
       console.error(err);
@@ -39,9 +43,17 @@ router.post("/study",async(req,res)=>{
 // 스터디 상세 조회 
 router.get("/study/:studyId", async (req, res) => {
   const { studyId } = req.params;
-  studyDetail = await Study.find({ studyId });
   
-  res.send({ detail: studyDetail });
+  studyDetail = await Study.find({ studyId });
+  const leader = await User.findOne({userId:studyDetail['userId']})
+  studyDetail['leaderName']=leader['nickname']
+
+  const joinMember= await  StudyJoin.find({studyId})
+  let members=[]
+  for(let i=0;i<joinMember.length;i++){
+    members.push(joinMember[i]['userName'])
+  }
+  res.send({ detail: studyDetail ,members:members});
 })
 
 
@@ -216,6 +228,10 @@ router.put("/study-comment/:studyCommentId", async (req, res) => {
   const { studyCommentId } = req.params;
   const { content} = req.body;
 
+
+
+
+
   // case1: comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
   if (!isExits) {
@@ -233,7 +249,16 @@ router.put("/study-comment/:studyCommentId", async (req, res) => {
   await StudyComment.updateOne({ studyCommentId }, { $set: { content } });
   res.send({ result: "success" });
 })
-
+  //모집마감일순으로 최근 5개만 조회
+  router.get("/recent-study", async (req, res, next) => {
+    try {
+      const studys = await Study.find({}).sort("-endJoinDate").limit(5);
+      res.json({ studys: studys });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+});
 // 시간 포맷 변경
 module.exports = router;
 Date.prototype.format = function(f) {
