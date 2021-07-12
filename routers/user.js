@@ -1,39 +1,18 @@
 const express = require("express");
 const router = express.Router();//라우터라고 선언한다.
 const User = require("../schemas/user");
-const Joi = require("joi");
 const jwt = require("jsonwebtoken")
 const StudyJoin = require("../schemas/studyJoin");
 const authMiddleware = require("../middlewares/authMiddleware")
 const Board = require("../schemas/board")
 const BoardComment = require("../schemas/boardComment")
 
-//Joi
-const registerSchema = Joi.object({
-    email: Joi.string()
-        .email(),
-    
-    nickname: Joi.string()
-        .alphanum()
-        .min(3)
-        .required(),
-    
-    password: Joi.string()
-        .alphanum()
-        .min(4),
-        
-    group: Joi.number()
-        .integer()
-        .min(1)
-        //integer를 사용했는데 maximum 값이 없어도 괜찮을까요?
-    
-})
 
 
 //회원가입 API
 router.post("/register",async(req,res)=>{
-    try{
-        const{email, nickname, group, password} = await registerSchema.validateAsync(req.body)  
+    
+    const{email, nickname, group, password} = req.body;
 
     
     const localPart = email.split('@')[0]
@@ -68,10 +47,8 @@ router.post("/register",async(req,res)=>{
     await user.save();
 
     res.send({ result: "success" });
-    } catch (err){
-        console.log(err)
-    res.send({result:"formatError"}) //joi값에 맞지않을때
-    }
+    
+    
     });
 
 
