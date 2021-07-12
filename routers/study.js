@@ -53,7 +53,10 @@ router.get("/study/:studyId", async (req, res) => {
   for(let i=0;i<joinMember.length;i++){
     members.push(joinMember[i]['userName'])
   }
-  res.send({ detail: studyDetail ,members:members});
+
+  const comments=await StudyComment.find({studyId})
+
+  res.send({ detail: studyDetail ,members:members,comments:comments});
 })
 
 
@@ -71,6 +74,7 @@ router.put("/study/:studyId", async (req, res) => {
 router.delete("/study/:studyId", async (req, res) => {
     const { studyId } = req.params;
     await Study.deleteOne({ studyId });
+    await StudyComment.deleteMany({studyId})
     res.send({ result: "success" });
 });
 

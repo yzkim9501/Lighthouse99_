@@ -4,7 +4,7 @@ const User = require("../schemas/user");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken")
 const StudyJoin = require("../schemas/studyJoin");
-const authMiddleware = require("../middlewares/authMiddleWare")
+const authMiddleware = require("../middlewares/authMiddleware")
 const Board = require("../schemas/board")
 const BoardComment = require("../schemas/boardComment")
 
