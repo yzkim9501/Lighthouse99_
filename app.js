@@ -1,11 +1,14 @@
 const express = require('express') //express를 쓴다
 const app = express()
+const cors = require('cors');
 const port = 3000// port 는 3000번
 
 const connect=require('./schemas');
 connect()
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+
+app.use(cors());
 
 const boardRouter = require("./routers/board");
 const studyRouter = require("./routers/study");
