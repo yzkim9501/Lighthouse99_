@@ -10,7 +10,7 @@ const StudyJoin = require("../schemas/studyJoin");
 router.get("/study", async (req, res, next) => {
     try {
       const studys = await Study.find({ }).sort("-date").lean();
-      for(let i=0;i<studys.length;i++){
+      for(let i=0;i<studys.length;i++){//찾은 스터디를 각각 한개씩 돌며 userId로 리더의 이름을 찾아서 property 설정
         const leader = await User.findOne({userId:studys[i]['userId']})
         studys[i]['leaderName']=leader['nickname']
       }
@@ -24,11 +24,11 @@ router.get("/study", async (req, res, next) => {
 
 // 스터디 등록 
 router.post("/study",async(req,res)=>{
-  const recentStudy = await Study.find().sort("-studyId").limit(1);
+  const recentStudy = await Study.find().sort("-studyId").limit(1);//최근에 등록된 스터디를 찾아온다
 
   let studyId=1;
   if(recentStudy.length!=0){
-      studyId=recentStudy[0]['studyId']+1
+      studyId=recentStudy[0]['studyId']+1//가장 최근의 스터디아이디 +1로 아이디 설정
   }
   const { name, schedule, startDate, endJoinDate, size, explain, joinLater, userId, level, studyType, joinNum } = req.body;
   // 날짜의 포맷을 변경해줘야하므로 const 대신 let으로 선언해준다. (21-07-10 추가)
@@ -45,16 +45,16 @@ router.get("/study/:studyId", async (req, res) => {
   const { studyId } = req.params;
   
   studyDetail = await Study.find({ studyId });
-  const leader = await User.findOne({userId:studyDetail['userId']})
+  const leader = await User.findOne({userId:studyDetail['userId']})//리더아이디로 리더정보를 가져온다.
   studyDetail['leaderName']=leader['nickname']
 
-  const joinMember= await  StudyJoin.find({studyId})
+  const joinMember= await  StudyJoin.find({studyId})//조인한 유저에 대한 정보를 가져온다.
   let members=[]
   for(let i=0;i<joinMember.length;i++){
     members.push(joinMember[i]['userName'])
   }
 
-  const comments=await StudyComment.find({studyId})
+  const comments=await StudyComment.find({studyId})//해당 스터디에 달린 모든 댓글을 조회한다.
 
   res.send({ detail: studyDetail ,members:members,comments:comments});
 })
@@ -74,10 +74,9 @@ router.put("/study/:studyId", async (req, res) => {
 router.delete("/study/:studyId", async (req, res) => {
     const { studyId } = req.params;
     await Study.deleteOne({ studyId });
-    await StudyComment.deleteMany({studyId})
+    await StudyComment.deleteMany({studyId})//스터디에 달려있던 코멘트들을 모두 삭제한다.
     res.send({ result: "success" });
 });
-
 
 // 스터디 신청 
 router.post("/join-study/:studyId", async (req, res) => {
@@ -142,39 +141,6 @@ router.delete("/join-study/:studyId", async (req, res) => {
 
 });
 
-
-
-//특정 포스트의 모든 댓글 조회 
-router.get("/study-all-comment/:studyId", async (req, res) => {
-    try {
-      const { studyId } = req.params;
-      let comments = await StudyComment.find({ studyId }).sort("-date");
-      res.json({ comments: comments });
-    } catch (err) {
-      console.error(err);
-      next(err);
-    }
-});
-  
-
-//댓글 단일 조회 
-router.get("/study-comment/:studyCommentId", async (req, res) => {
-  const { studyCommentId } = req.params;
-  
-  comment = await StudyComment.findOne({ studyCommentId });
-  // 댓글이 존재하는지 확인하기 (21-07-10 추가)
-  if (!comment) {
-    res.status(401).send({
-      errorMessage: "존재하지 않는 댓글입니다."
-    });
-    return;
-  }
-
-
-  res.json({ detail: comment });
-});
-  
-
 //댓글 추가 
 router.post('/study-comment', async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
@@ -231,10 +197,6 @@ router.delete("/study-comment/:studyCommentId", async (req, res) => {
 router.put("/study-comment/:studyCommentId", async (req, res) => {
   const { studyCommentId } = req.params;
   const { content} = req.body;
-
-
-
-
 
   // case1: comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
