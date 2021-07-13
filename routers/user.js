@@ -23,24 +23,24 @@ router.post("/register",async(req,res)=>{
         return;
     }
 
-    const existEmail = await User.find({email});
-    if (existEmail.length){
+    const existEmail = await User.find({email}); // request한 email이 User에 존재하는지 확인  
+    if (existEmail.length){ 
         res.send({
-            result: "emailExist"
+            result: "emailExist" //email이 존재하면 eamilExist 에러를 보내줌.
         })
         return;
     }
-    const existNickname = await User.find({nickname});
+    const existNickname = await User.find({nickname}); // request한 nickname이 User에 존재하는지 확인 
     if (existNickname.length){
         res.send({
-            result: "nicknameExist"
+            result: "nicknameExist" //nickname이 존재하면 nicknameExist 에러를 보내줌.
         })
         return;
     }
 
-    const recentUserId = await User.find().sort("-userId").limit(1);
-    let userId=1; 
-    if(recentUserId.length!=0){
+    const recentUserId = await User.find().sort("-userId").limit(1); //가장 최근에 찍힌 userId값 한개를 탐색하여 recentUserId에 담아줌.
+    let userId=1;  //만약에 recentUserId가 비어있다면 userId값은 1로 할당됨.
+    if(recentUserId.length!=0){  //recentUserId 값이 비어있지 않다면, recentUserId 값에 1을 더하여 다시 userId에 담아줌.
          userId=recentUserId[0]['userId']+1 }
 
     const user = new User({userId, email, nickname, group, password});
@@ -57,34 +57,34 @@ router.post("/register",async(req,res)=>{
 //로그인 API
 router.post("/login", async(req, res)=>{
     const{email, password} = req.body;
-    const user = await User.findOne({email, password}).exec();
+    const user = await User.findOne({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
     const userId = user.userId
 
     if(!user){
         res.send({
-            result:"notExist"
+            result:"notExist" //만약 user가 없다면 notExist를 보내줌.
         })
         return;
     }
 
-    const token = jwt.sign({userId: user.userId}, "all-is-well");
+    const token = jwt.sign({userId: user.userId}, "all-is-well"); //userId를 토큰으로 만듬, key는 "all-is-well"
     res.send({
-        result:"success",
+        result:"success", //success, userId, token값을 보내줌
         userId, 
         token
     })
 })
 
 //내 정보 간단조회
-router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{
-    const {userId}= req.params;
-    const user= await User.findOne({userId:userId}).exec();
+router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{  //authMiddleware를 사용하여 토큰 인증이 된 클라이언트만 사용가능
+    const {userId}= req.params; //url의 userId값을 userId에 담음.
+    const user= await User.findOne({userId:userId}).exec(); //userId가 userId인 데이터를 User에서 찾아 user안에 담아줌.  
     
     const email = user.email;
     const nickname = user.nickname;
     const group = user.group
 
-        res.json({
+        res.json({ //user의 email, nickname, group 값을 response로 보내줌.
             email:email,
             nickname:nickname,
             group:group,
@@ -92,9 +92,9 @@ router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{
     })
 
 //참여중인 스터디 확인
-router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{
-    const {userId} = req.params;
-    const studyInfo= await StudyJoin.find({userId}).exec();
+router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{ 
+    const {userId} = req.params; 
+    const studyInfo= await StudyJoin.find({userId}).exec(); //userId가 포함된 데이터들을 StudyJoin에서 탐색하여 studyInfo에 담아줌.
         res.json({
             studyInfo: studyInfo,
          });       
@@ -105,16 +105,10 @@ router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{
 
 router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
     const {userId} = req.params;
-    const{nickname, password, confirmPassword} = req.body;
+    const{nickname, password} = req.body;
     
-    if (password !== confirmPassword){
-        res.send({
-            result: "passwordError"
-        })
-        return;
-    }
     
-    const existNickname = await User.find({nickname});
+    const existNickname = await User.find({nickname}); //닉네임 중복검사
     if (existNickname.length){
         res.send({
             result: "nicknameExist"
@@ -122,7 +116,7 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
         return;
     }
 
-    await User.updateOne({userId:userId}, {$set:{nickname:nickname, password:password}}).exec();
+    await User.updateOne({userId:userId}, {$set:{nickname:nickname, password:password}}).exec(); // User의 userId값이 url에서 받은 userId값과 같은 데이터를 수정할건데, nickname, password를 클라이언트에서 요청받은대로 수정할것. 
     res.send({
         result:"success"
     })
@@ -132,10 +126,10 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
 //내가 쓴 글 조회
 router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
     const {userId} = req.params;
-    const myPost =  await Board.find({userId}).exec();
+    const myPost =  await Board.find({userId}).exec(); //Board에서 userId를 포함하는 데이터를 모두 찾아 myPost에 담음.
     
     res.send({
-        myPost: myPost,
+        myPost: myPost, //myPost 리스트를 myPost라는 이름으로 보냄.
     })
 });
 
@@ -143,10 +137,10 @@ router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
 //내가 쓴 댓글 조회
 router.get("/mycomment/:userId", authMiddleware, async(req, res) => {
     const {userId} = req.params;
-    const myComment = await BoardComment.find({userId}).exec();
+    const myComment = await BoardComment.find({userId}).exec(); //BoardComment에서 userId를 포함하는 데이터를 모두 찾아 myComment에 담음.
 
     res.send({
-        myComment:myComment,
+        myComment:myComment,  //myComment 리스트를 myComment라는 이름으로 보냄.
     })
 })
 
