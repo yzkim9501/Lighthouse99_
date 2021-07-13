@@ -15,10 +15,10 @@ router.post("/register",async(req,res)=>{
     const{email, nickname, group, password} = req.body;
 
     
-    const localPart = email.split('@')[0]
+    const localPart = email.split('@')[0]  //이메일의 로컬파트(@를 기준으로 앞부분)가 패스워드에 포함되지 않게
     if (password.includes(localPart)){
         res.send({
-            result: "existError"
+            result: "existError"  //로컬파트각 패스워드에 포함될 경우 response로 "existError" 보내줌.
         })
         return;
     }
