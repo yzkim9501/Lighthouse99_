@@ -58,7 +58,7 @@ router.post("/register",async(req,res)=>{
 router.post("/login", async(req, res)=>{
     const{email, password} = req.body;
     const user = await User.findOne({email, password}).exec();
-   
+    const userId = user.userId
 
     if(!user){
         res.send({
@@ -69,7 +69,8 @@ router.post("/login", async(req, res)=>{
 
     const token = jwt.sign({userId: user.userId}, "all-is-well");
     res.send({
-        result:"success", 
+        result:"success",
+        userId, 
         token
     })
 })
