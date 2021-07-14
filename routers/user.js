@@ -60,6 +60,8 @@ router.post("/login", async(req, res)=>{
     const user = await User.find({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
     const userId = user.userId
 
+    console.log(user)
+
     if(!user){
         res.send({
             result:"notExist" //만약 user가 없다면 notExist를 보내줌.
