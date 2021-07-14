@@ -67,7 +67,7 @@ router.put("/study/:studyId", authMiddleware, async (req, res) => {
     const studyDetail = await Study.findOne({ studyId })
     const current_user = res.locals.user.userId
     if (studyDetail.userId !== current_user) {
-      res.status(401).send({
+      res.status(403).send({
         errorMessage: '작성자만 수정할 수 있습니다.'
       })
       return
@@ -88,7 +88,7 @@ router.delete("/study/:studyId", authMiddleware, async (req, res) => {
     const studyDetail = await Study.findOne({ studyId })
     const current_user = res.locals.user.userId
     if (studyDetail.userId !== current_user) {
-      res.status(401).send({
+      res.status(403).send({
         errorMessage: '작성자만 삭제할 수 있습니다.'
       })
       return
@@ -112,9 +112,15 @@ router.post("/join-study/:studyId", authMiddleware, async (req, res) => {
       })
 
       // 이미 참가한 참여자 또는 스터디 작성자라면 에러메세지를 뱉는다.
-      if (isExist[0] || isLeader)  {
-        res.status(401).send({
+      if (isExist[0])  {
+        res.status(403).send({
           errorMessage: '이미 참여하셨습니다.'
+        })
+        return;
+        
+      } else if (isLeader) {
+        res.status(403).send({
+          errorMessage: `작성자는 또 참여하실 수 없습니다. leader user아이디: ${userId}, isLeader: ${isLeader}`
         })
         return;
       }
@@ -182,7 +188,7 @@ const { studyCommentId } = req.params;
 comment = await StudyComment.findOne({ studyCommentId });
 // 댓글이 존재하는지 확인하기 (21-07-10 추가)
 if (!comment) {
-  res.status(401).send({
+  res.status(403).send({
     errorMessage: "존재하지 않는 댓글입니다."
   });
   return;
@@ -207,7 +213,7 @@ router.post('/study-comment', authMiddleware, async (req, res) => {
   // board id가 틀렸을 시 에러 출력 (21-07-10 추가)
   isExits = await Study.findOne({ studyId });
   if (!isExits) {
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: '존재하지 않는 게시물입니다.'
     });
     return;
@@ -233,7 +239,7 @@ router.delete("/study-comment/:studyCommentId", authMiddleware, async (req, res)
   const commentDetail = await StudyComment.findOne({ studyCommentId })
   const current_user = res.locals.user.userId
   if (commentDetail.userId !== current_user) {
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: '작성자만 삭제할 수 있습니다.'
     })
     return
@@ -243,7 +249,7 @@ router.delete("/study-comment/:studyCommentId", authMiddleware, async (req, res)
   // comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
   if (!isExits) {
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: '존재하지 않는 댓글입니다.'
     })
     return;
@@ -263,7 +269,7 @@ router.put("/study-comment/:studyCommentId", authMiddleware, async (req, res) =>
   const commentDetail = await StudyComment.findOne({ studyCommentId })
   const current_user = res.locals.user.userId
   if (commentDetail.userId !== current_user) {
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: '작성자만 수정할 수 있습니다.'
     })
     return
@@ -272,7 +278,7 @@ router.put("/study-comment/:studyCommentId", authMiddleware, async (req, res) =>
   // case1: comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
   if (!isExits) {
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: '존재하지 않는 댓글입니다.'
     });
     return;
