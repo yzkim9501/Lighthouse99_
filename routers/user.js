@@ -57,7 +57,7 @@ router.post("/register",async(req,res)=>{
 //로그인 API
 router.post("/login", async(req, res)=>{
     const{email, password} = req.body;
-    const user = await User.findOne({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
+    const user = await User.find({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
     const userId = user.userId
 
     if(!user){
