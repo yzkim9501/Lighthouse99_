@@ -4,8 +4,8 @@ const User = require("../schemas/user");
 const jwt = require("jsonwebtoken")
 const Study = require("../schemas/study");
 const authMiddleware = require("../middlewares/authMiddleware")
-const Board = require("../schemas/board")
-const BoardComment = require("../schemas/boardComment")
+const studyComment = require("../schemas/studyComment")
+
 
 
 
@@ -123,21 +123,21 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
     
 })
 
-//내가 쓴 글 조회
-router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
-    const {userId} = req.params;
-    const myPost =  await Board.find({userId}).sort("-date").exec(); //Board에서 userId를 포함하는 데이터를 모두 찾아 myPost에 담음.
+// //내가 쓴 글 조회
+// router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
+//     const {userId} = req.params;
+//     const myPost =  await Study.find({userId}).sort("-date").exec(); //Board에서 userId를 포함하는 데이터를 모두 찾아 myPost에 담음.
     
-    res.send({
-        myPost: myPost, //myPost 리스트를 myPost라는 이름으로 보냄.
-    })
-});
+//     res.send({
+//         myPost: myPost, //myPost 리스트를 myPost라는 이름으로 보냄.
+//     })
+// });
 
 
 //내가 쓴 댓글 조회
 router.get("/mycomment/:userId", authMiddleware, async(req, res) => {
     const {userId} = req.params;
-    const myComment = await BoardComment.find({userId}).sort("-date").exec(); //BoardComment에서 userId를 포함하는 데이터를 모두 찾아 myComment에 담음.
+    const myComment = await studyComment.find({userId}).sort("-date").exec(); //BoardComment에서 userId를 포함하는 데이터를 모두 찾아 myComment에 담음.
 
     res.send({
         myComment:myComment,  //myComment 리스트를 myComment라는 이름으로 보냄.
