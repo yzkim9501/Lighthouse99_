@@ -4,6 +4,7 @@ const Study = require("../schemas/study");
 const User = require("../schemas/user");
 const StudyComment = require("../schemas/studyComment");
 const StudyJoin = require("../schemas/studyJoin");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 
 // 진행 중/ 완료된 스터디 목록 조회 
@@ -23,7 +24,7 @@ router.get("/study", async (req, res, next) => {
 
 
 // 스터디 등록 
-router.post("/study",async(req,res)=>{
+router.post("/study", authMiddleware, async(req,res)=>{
   const recentStudy = await Study.find().sort("-studyId").limit(1);//최근에 등록된 스터디를 찾아온다
 
   let studyId=1;
@@ -59,7 +60,7 @@ router.get("/study/:studyId", async (req, res) => {
 
 
 // 스터디 수정 
-router.put("/study/:studyId", async (req, res) => {
+router.put("/study/:studyId", authMiddleware, async (req, res) => {
     const { studyId } = req.params;
     const {name,schedule,startDate,endJoinDate,writeDate,size,explain,joinLater,userId,level,studyType,joinNum} = req.body;
     await Study.updateOne({ studyId }, { $set: { name,schedule,startDate,endJoinDate,size,explain,joinLater,userId,level,studyType,joinNum } });
@@ -69,7 +70,7 @@ router.put("/study/:studyId", async (req, res) => {
 
 
 // 스터디 삭제
-router.delete("/study/:studyId", async (req, res) => {
+router.delete("/study/:studyId", authMiddleware, async (req, res) => {
     const { studyId } = req.params;
     await Study.deleteOne({ studyId });
     await StudyComment.deleteMany({studyId})//스터디에 달려있던 코멘트들을 모두 삭제한다.
@@ -77,7 +78,7 @@ router.delete("/study/:studyId", async (req, res) => {
 });
 
 // 스터디 신청 
-router.post("/join-study/:studyId", async (req, res) => {
+router.post("/join-study/:studyId", authMiddleware, async (req, res) => {
     try {
       const { studyId } = req.params;
       const { userId, leader } = req.body;
@@ -121,7 +122,7 @@ router.post("/join-study/:studyId", async (req, res) => {
 });
 
 // 스터디 탈퇴 (테스트 완료 2021-07-11)
-router.delete("/join-study/:studyId", async (req, res) => {
+router.delete("/join-study/:studyId", authMiddleware, async (req, res) => {
   const { studyId } = req.params;
   const { userId } = req.body;
 
@@ -151,7 +152,7 @@ router.get("/study-all-comment/:studyId", async (req, res) => {
 });
 
 //댓글 단일 조회 
-router.get("/study-comment/:studyCommentId", async (req, res) => {
+router.get("/study-comment/:studyCommentId",  async (req, res) => {
 const { studyCommentId } = req.params;
 
 comment = await StudyComment.findOne({ studyCommentId });
@@ -165,7 +166,7 @@ if (!comment) {
 res.json({ detail: comment });
 });
 //댓글 추가 
-router.post('/study-comment', async (req, res) => {
+router.post('/study-comment', authMiddleware, async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
   let studyCommentId=1;
 
@@ -199,7 +200,7 @@ router.post('/study-comment', async (req, res) => {
   
 
 //댓글 삭제 
-router.delete("/study-comment/:studyCommentId", async (req, res) => {
+router.delete("/study-comment/:studyCommentId", authMiddleware, async (req, res) => {
   const { studyCommentId } = req.params;
 
   // comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
@@ -217,7 +218,7 @@ router.delete("/study-comment/:studyCommentId", async (req, res) => {
 
 
 //댓글 수정 
-router.put("/study-comment/:studyCommentId", async (req, res) => {
+router.put("/study-comment/:studyCommentId", authMiddleware, async (req, res) => {
   const { studyCommentId } = req.params;
   const { content} = req.body;
 
