@@ -94,7 +94,7 @@ router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{  //authMiddl
 //참여중인 스터디 확인
 router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{ 
     const {userId} = req.params; 
-    const studyInfo= await Study.find({userId}).sort("-studyId").exec(); //userId가 포함된 데이터들을 StudyJoin에서 탐색하여 studyInfo에 담아줌.
+    const studyInfo= await Study.find({userId}).sort("studyId").exec(); //userId가 포함된 데이터들을 StudyJoin에서 탐색하여 studyInfo에 담아줌.
         res.json({
             studyInfo: studyInfo,
          });       
