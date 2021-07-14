@@ -52,7 +52,9 @@ router.get("/study/:studyId", async (req, res) => {
   const joinMember= await  StudyJoin.find({studyId})//조인한 유저에 대한 정보를 가져온다.
   let members=[]
   for(let i=0;i<joinMember.length;i++){
-    members.push(joinMember[i]['userName'])
+    const id=joinMember[i]['userId'];
+    const name=joinMember[i]['userName']
+    members.push({id,name})
   }
 
   res.send({ detail: studyDetail ,members:members});

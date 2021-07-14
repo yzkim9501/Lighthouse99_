@@ -5,7 +5,7 @@
     "title": "등대99",
     "description": "항해99 미니프로젝트, 등대99의 API를 정리해놓은 페이지"
   },
-  "host": "54.180.139.140/3000",
+  "host": "localhost:3000", 
   "basePath": "/",
   "tags": [ ],
   "schemes": [
@@ -321,6 +321,29 @@
         "responses": {}
       }
     },
+    "/api/study-all-comment/{studyId}": {
+      "get": {
+        "tags": ["Study-Comment"],
+        "description": "각 스터디 별 댓글",
+        "parameters": [
+          {
+            "name": "studyId",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    
     "/api/study-comment": {
       "post": {
         "tags": ["Study-Comment"],
@@ -368,6 +391,7 @@
         }
       }
     },
+
     "/api/study-comment/{studyCommentId}": {
       "delete": {
         "tags": ["Study-Comment"],
