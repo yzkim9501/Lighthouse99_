@@ -151,20 +151,20 @@ router.get("/study-all-comment/:studyId", async (req, res) => {
   }
 });
 
-//댓글 단일 조회 
-router.get("/study-comment/:studyCommentId",  async (req, res) => {
-const { studyCommentId } = req.params;
+// //댓글 단일 조회 
+// router.get("/study-comment/:studyCommentId",  async (req, res) => {
+// const { studyCommentId } = req.params;
 
-comment = await StudyComment.findOne({ studyCommentId });
-// 댓글이 존재하는지 확인하기 (21-07-10 추가)
-if (!comment) {
-  res.status(401).send({
-    errorMessage: "존재하지 않는 댓글입니다."
-  });
-  return;
-}
-res.json({ detail: comment });
-});
+// comment = await StudyComment.findOne({ studyCommentId });
+// // 댓글이 존재하는지 확인하기 (21-07-10 추가)
+// if (!comment) {
+//   res.status(401).send({
+//     errorMessage: "존재하지 않는 댓글입니다."
+//   });
+//   return;
+// }
+// res.json({ detail: comment });
+// });
 //댓글 추가 
 router.post('/study-comment', authMiddleware, async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
