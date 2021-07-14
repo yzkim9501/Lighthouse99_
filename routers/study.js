@@ -54,9 +54,7 @@ router.get("/study/:studyId", async (req, res) => {
     members.push(joinMember[i]['userName'])
   }
 
-  const comments=await StudyComment.find({studyId})//해당 스터디에 달린 모든 댓글을 조회한다.
-
-  res.send({ detail: studyDetail ,members:members,comments:comments});
+  res.send({ detail: studyDetail ,members:members});
 })
 
 
@@ -140,7 +138,32 @@ router.delete("/join-study/:studyId", async (req, res) => {
   res.send({ result: "success" })
 
 });
+//특정 포스트의 모든 댓글 조회 
+router.get("/study-all-comment/:studyId", async (req, res) => {
+  try {
+    const { studyId } = req.params;
+    let comments = await StudyComment.find({ studyId }).sort("-date");
+    res.json({ comments: comments });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
+//댓글 단일 조회 
+router.get("/study-comment/:studyCommentId", async (req, res) => {
+const { studyCommentId } = req.params;
+
+comment = await StudyComment.findOne({ studyCommentId });
+// 댓글이 존재하는지 확인하기 (21-07-10 추가)
+if (!comment) {
+  res.status(401).send({
+    errorMessage: "존재하지 않는 댓글입니다."
+  });
+  return;
+}
+res.json({ detail: comment });
+});
 //댓글 추가 
 router.post('/study-comment', async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
