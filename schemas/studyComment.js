@@ -12,7 +12,7 @@ const studyCommentSchema = new Schema({
     type:String,
   },
   userId:{
-    type:String,
+    type:Number,
   },
   date:{
     type:String,

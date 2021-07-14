@@ -62,8 +62,19 @@ router.get("/study/:studyId", async (req, res) => {
 // 스터디 수정 
 router.put("/study/:studyId", authMiddleware, async (req, res) => {
     const { studyId } = req.params;
-    const {name,schedule,startDate,endJoinDate,writeDate,size,explain,joinLater,userId,level,studyType,joinNum} = req.body;
-    await Study.updateOne({ studyId }, { $set: { name,schedule,startDate,endJoinDate,size,explain,joinLater,userId,level,studyType,joinNum } });
+
+    // 작성자와 현재 user가 동일하지 않을 시 수정 진행 X
+    const studyDetail = await Study.findOne({ studyId })
+    const current_user = res.locals.user.userId
+    if (studyDetail.userId !== current_user) {
+      res.status(401).send({
+        errorMessage: '작성자만 수정할 수 있습니다.'
+      })
+      return
+    }
+
+    const {name,schedule,startDate,endJoinDate,size,explain,joinLater,level,studyType,joinNum} = req.body;
+    await Study.updateOne({ studyId }, { $set: { name,schedule,startDate,endJoinDate,size,explain,joinLater,level,studyType,joinNum } });
     
     res.send({ result: "success" });
 })
@@ -72,6 +83,16 @@ router.put("/study/:studyId", authMiddleware, async (req, res) => {
 // 스터디 삭제
 router.delete("/study/:studyId", authMiddleware, async (req, res) => {
     const { studyId } = req.params;
+
+    // 작성자와 현재 user가 동일하지 않을 시 수정 진행 X
+    const studyDetail = await Study.findOne({ studyId })
+    const current_user = res.locals.user.userId
+    if (studyDetail.userId !== current_user) {
+      res.status(401).send({
+        errorMessage: '작성자만 삭제할 수 있습니다.'
+      })
+      return
+    }
     await Study.deleteOne({ studyId });
     await StudyComment.deleteMany({studyId})//스터디에 달려있던 코멘트들을 모두 삭제한다.
     res.send({ result: "success" });
@@ -83,12 +104,15 @@ router.post("/join-study/:studyId", authMiddleware, async (req, res) => {
       const { studyId } = req.params;
       const { userId, leader } = req.body;
 
+      // 참가자 userId 와 스터디 작성자가 동일한지 확인
+      const isLeader = await Study.findOne({ studyId, userId });
       // 이미 참가가 완료된 스터디인지 확인하기 (21-07-10 추가)
       const isExist = await StudyJoin.find({
         $and: [{ studyId }, { userId }],
       })
 
-      if (isExist[0]) {
+      // 이미 참가한 참여자 또는 스터디 작성자라면 에러메세지를 뱉는다.
+      if (isExist[0] || isLeader)  {
         res.status(401).send({
           errorMessage: '이미 참여하셨습니다.'
         })
@@ -151,20 +175,21 @@ router.get("/study-all-comment/:studyId", async (req, res) => {
   }
 });
 
-// //댓글 단일 조회 
-// router.get("/study-comment/:studyCommentId",  async (req, res) => {
-// const { studyCommentId } = req.params;
+//댓글 단일 조회 
+router.get("/study-comment/:studyCommentId",  async (req, res) => {
+const { studyCommentId } = req.params;
 
-// comment = await StudyComment.findOne({ studyCommentId });
-// // 댓글이 존재하는지 확인하기 (21-07-10 추가)
-// if (!comment) {
-//   res.status(401).send({
-//     errorMessage: "존재하지 않는 댓글입니다."
-//   });
-//   return;
-// }
-// res.json({ detail: comment });
-// });
+comment = await StudyComment.findOne({ studyCommentId });
+// 댓글이 존재하는지 확인하기 (21-07-10 추가)
+if (!comment) {
+  res.status(401).send({
+    errorMessage: "존재하지 않는 댓글입니다."
+  });
+  return;
+}
+res.json({ detail: comment });
+});
+
 //댓글 추가 
 router.post('/study-comment', authMiddleware, async (req, res) => {
   const recentComment = await StudyComment.find().sort("-studyCommentId").limit(1);
@@ -203,6 +228,18 @@ router.post('/study-comment', authMiddleware, async (req, res) => {
 router.delete("/study-comment/:studyCommentId", authMiddleware, async (req, res) => {
   const { studyCommentId } = req.params;
 
+  
+  // 작성자와 현재 user가 동일하지 않을 시 수정 진행 X
+  const commentDetail = await StudyComment.findOne({ studyCommentId })
+  const current_user = res.locals.user.userId
+  if (commentDetail.userId !== current_user) {
+    res.status(401).send({
+      errorMessage: '작성자만 삭제할 수 있습니다.'
+    })
+    return
+  }
+
+
   // comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
   if (!isExits) {
@@ -221,6 +258,16 @@ router.delete("/study-comment/:studyCommentId", authMiddleware, async (req, res)
 router.put("/study-comment/:studyCommentId", authMiddleware, async (req, res) => {
   const { studyCommentId } = req.params;
   const { content} = req.body;
+
+  // 작성자와 현재 user가 동일하지 않을 시 수정 진행 X
+  const commentDetail = await StudyComment.findOne({ studyCommentId })
+  const current_user = res.locals.user.userId
+  if (commentDetail.userId !== current_user) {
+    res.status(401).send({
+      errorMessage: '작성자만 수정할 수 있습니다.'
+    })
+    return
+  }
 
   // case1: comment가 존재하지 않을 시 에러 출력 (21-07-10 추가)
   isExits = await StudyComment.findOne({ studyCommentId });
