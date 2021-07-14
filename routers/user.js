@@ -94,7 +94,7 @@ router.get("/briefInfo/:userId", authMiddleware, async(req, res)=>{  //authMiddl
 //참여중인 스터디 확인
 router.get("/mystudy/:userId", authMiddleware, async(req, res)=>{ 
     const {userId} = req.params; 
-    const studyInfo= await StudyJoin.find({userId}).exec(); //userId가 포함된 데이터들을 StudyJoin에서 탐색하여 studyInfo에 담아줌.
+    const studyInfo= await Study.find({userId}).sort("-studyId").exec(); //userId가 포함된 데이터들을 StudyJoin에서 탐색하여 studyInfo에 담아줌.
         res.json({
             studyInfo: studyInfo,
          });       
@@ -126,7 +126,7 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
 //내가 쓴 글 조회
 router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
     const {userId} = req.params;
-    const myPost =  await Board.find({userId}).exec(); //Board에서 userId를 포함하는 데이터를 모두 찾아 myPost에 담음.
+    const myPost =  await Board.find({userId}).sort("-date").exec(); //Board에서 userId를 포함하는 데이터를 모두 찾아 myPost에 담음.
     
     res.send({
         myPost: myPost, //myPost 리스트를 myPost라는 이름으로 보냄.
@@ -137,7 +137,7 @@ router.get("/mypost/:userId", authMiddleware, async(req, res) =>{
 //내가 쓴 댓글 조회
 router.get("/mycomment/:userId", authMiddleware, async(req, res) => {
     const {userId} = req.params;
-    const myComment = await BoardComment.find({userId}).exec(); //BoardComment에서 userId를 포함하는 데이터를 모두 찾아 myComment에 담음.
+    const myComment = await BoardComment.find({userId}).sort("-date").exec(); //BoardComment에서 userId를 포함하는 데이터를 모두 찾아 myComment에 담음.
 
     res.send({
         myComment:myComment,  //myComment 리스트를 myComment라는 이름으로 보냄.
