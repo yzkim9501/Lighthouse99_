@@ -188,11 +188,6 @@
                   "description": "중도참여 여부",
                   "example": true
                 },
-                "userId": {
-                  "type": "integer",
-                  "description": "리더 인덱스",
-                  "example": 1
-                },
                 "level": {
                   "type": "integer",
                   "description": "스터디 난이도 (상:0, 중:1, 하:2 무관:3)",
