@@ -10,7 +10,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 // 진행 중/ 완료된 스터디 목록 조회 
 router.get("/study", async (req, res, next) => {
     try {
-      const studys = await Study.find({ }).sort("-date").lean();
+      const studys = await Study.find({ }).sort("-writeDate").lean();
       for(let i=0;i<studys.length;i++){//찾은 스터디를 각각 한개씩 돌며 userId로 리더의 이름을 찾아서 property 설정
         const leader = await User.findOne({userId:studys[i]['userId']})
         studys[i]['leaderName']=leader['nickname']
@@ -98,6 +98,7 @@ router.delete("/study/:studyId", authMiddleware, async (req, res) => {
     }
     await Study.deleteOne({ studyId });
     await StudyComment.deleteMany({studyId})//스터디에 달려있던 코멘트들을 모두 삭제한다.
+    await StudyJoin.deleteMany({studyId})
     res.send({ result: "success" });
 });
 
@@ -176,7 +177,7 @@ router.delete("/join-study/:studyId", authMiddleware, async (req, res) => {
 router.get("/study-all-comment/:studyId", async (req, res) => {
   try {
     const { studyId } = req.params;
-    let comments = await StudyComment.find({ studyId }).sort("-date").lean();
+    let comments = await StudyComment.find({ studyId }).sort("date").lean();
 
     for(let i=0;i<comments.length;i++){//찾은 스터디를 각각 한개씩 돌며 userId로 리더의 이름을 찾아서 property 설정
       const commentAuthor = await User.findOne({userId:comments[i]['userId']})
