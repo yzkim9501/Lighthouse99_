@@ -58,10 +58,7 @@ router.post("/register",async(req,res)=>{
 router.post("/login", async(req, res)=>{
     const{email, password} = req.body;
     const user = await User.findOne({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
-    const userId = user.userId
-
-    console.log(user)
-
+    
     if(!user){
         res.send({
             result:"notExist" //만약 user가 없다면 notExist를 보내줌.
@@ -69,6 +66,7 @@ router.post("/login", async(req, res)=>{
         return;
     }
 
+    const userId = user.userId
     const token = jwt.sign({userId: user.userId}, "all-is-well"); //userId를 토큰으로 만듬, key는 "all-is-well"
     res.send({
         result:"success", //success, userId, token값을 보내줌
