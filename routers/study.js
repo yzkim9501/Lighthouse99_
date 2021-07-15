@@ -37,7 +37,7 @@ router.post("/study", authMiddleware, async(req,res)=>{
   writeDate=(new Date().format("yyyy-MM-dd a/p hh:mm:ss"))
   await Study.create({ studyId, name, schedule, startDate, endJoinDate, writeDate, size, explain, joinLater, userId, level, studyType, joinNum });
   
-  res.send({ result: "success" });
+  res.send({ studyId });
 })
 
 
@@ -106,7 +106,7 @@ router.delete("/study/:studyId", authMiddleware, async (req, res) => {
 router.post("/join-study/:studyId", authMiddleware, async (req, res) => {
     try {
       const { studyId } = req.params;
-      const { userId, leader } = req.body;
+      const { userId } = req.body;
 
       // 참가자 userId 와 스터디 작성자가 동일한지 확인
       const isLeader = await Study.findOne({ studyId, userId });
@@ -144,8 +144,8 @@ router.post("/join-study/:studyId", authMiddleware, async (req, res) => {
 
       // 스터디 참여 인원 수 증가
       await Study.updateOne({ studyId },  { $inc: { joinNum: 1 }});
-      await StudyJoin.create({ studyId, userId, userName, leader });
-      studyMemberInfo = await StudyJoin.find({studyId})
+      await StudyJoin.create({ studyId, userId, userName, leader:false });
+      const studyMemberInfo = await StudyJoin.find({studyId})
       
       res.send({"currentMemberCnt":studyMemberInfo.length,"studyMemberInfo":studyMemberInfo})
   
@@ -170,7 +170,9 @@ router.delete("/join-study/:studyId", authMiddleware, async (req, res) => {
     await Study.updateOne({ studyId },  { $inc: { joinNum: -1 }})
   }
 
-  res.send({ result: "success" })
+  const studyMemberInfo = await StudyJoin.find({studyId})
+      
+  res.send({"currentMemberCnt":studyMemberInfo.length,"studyMemberInfo":studyMemberInfo})
 
 });
 //특정 포스트의 모든 댓글 조회 
@@ -237,7 +239,7 @@ router.post('/study-comment', authMiddleware, async (req, res) => {
   }  
 
   await StudyComment.create({ studyCommentId, studyId, content, userId, date });
-  res.send({ result: "success" });
+  res.send({ studyCommentId });
 });
   
 
