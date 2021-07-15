@@ -67,10 +67,12 @@ router.post("/login", async(req, res)=>{
     }
 
     const userId = user.userId
+    const nickname = user.nickname
     const token = jwt.sign({userId: user.userId}, "all-is-well"); //userId를 토큰으로 만듬, key는 "all-is-well"
     res.send({
         result:"success", //success, userId, token값을 보내줌
         userId, 
+        nickname,
         token
     })
 })
