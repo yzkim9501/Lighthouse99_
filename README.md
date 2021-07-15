@@ -40,3 +40,4 @@ https://www.notion.so/16-b48bc899e86c45069424f907d576772d
 |   Mongoose   | MongoDB 데이터 모델링 |
 |     Joi      |   Validation Check    |
 |     Cors     | Request Resource 제한 |
+|     Swagger     | API 문서화 |
