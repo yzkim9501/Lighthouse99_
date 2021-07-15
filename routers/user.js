@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const Study = require("../schemas/study");
 const authMiddleware = require("../middlewares/authMiddleware")
 const studyComment = require("../schemas/studyComment")
-
+const bcrypt= require('bcrypt')
 
 
 
@@ -42,8 +42,9 @@ router.post("/register",async(req,res)=>{
     let userId=1;  //만약에 recentUserId가 비어있다면 userId값은 1로 할당됨.
     if(recentUserId.length!=0){  //recentUserId 값이 비어있지 않다면, recentUserId 값에 1을 더하여 다시 userId에 담아줌.
          userId=recentUserId[0]['userId']+1 }
-
-    const user = new User({userId, email, nickname, group, password});
+    const salt=await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password,salt);
+    const user = new User({userId, email, nickname, group, password:hashedPassword});
     await user.save();
 
     res.send({ result: "success" });
@@ -57,7 +58,7 @@ router.post("/register",async(req,res)=>{
 //로그인 API
 router.post("/login", async(req, res)=>{
     const{email, password} = req.body;
-    const user = await User.findOne({email, password}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
+    const user = await User.findOne({email}).exec(); //request한 email, body를 User에서 탐색하여 user에 담아줌. 
     
     if(!user){
         res.send({
@@ -65,7 +66,15 @@ router.post("/login", async(req, res)=>{
         })
         return;
     }
-
+    console.log(user.password)
+const authenticate = await bcrypt.compare(password,user.password)
+console.log(authenticate)
+if(authenticate==false){
+    res.send({
+        result:"notExist" //만약 user가 없다면 notExist를 보내줌.
+    })
+    return;
+}
     const userId = user.userId
     const nickname = user.nickname
     const token = jwt.sign({userId: user.userId}, "all-is-well"); //userId를 토큰으로 만듬, key는 "all-is-well"
@@ -118,7 +127,9 @@ router.put("/myinfo/:userId", authMiddleware, async(req, res) => {
         return;
     }
 
-    await User.updateOne({userId:userId}, {$set:{nickname:nickname, password:password}}).exec(); // User의 userId값이 url에서 받은 userId값과 같은 데이터를 수정할건데, nickname, password를 클라이언트에서 요청받은대로 수정할것. 
+    const salt=await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password,salt);
+    await User.updateOne({userId:userId}, {$set:{nickname:nickname, password:hashedPassword}}).exec(); // User의 userId값이 url에서 받은 userId값과 같은 데이터를 수정할건데, nickname, password를 클라이언트에서 요청받은대로 수정할것. 
     res.send({
         result:"success"
     })
