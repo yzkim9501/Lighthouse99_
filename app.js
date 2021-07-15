@@ -1,6 +1,6 @@
 const express = require('express') //express를 쓴다
 const app = express()
-const cors = require('cors');
+// const cors = require('cors');
 const port = 3000// port 는 3000번
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
@@ -9,11 +9,11 @@ connect()
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
-const corsOptions = {
-  origin: "http://lighthouse99.club.s3-website.ap-northeast-2.amazonaws.com",
-  credentials: true
-}
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: "http://lighthouse99.club.s3-website.ap-northeast-2.amazonaws.com",
+//   credentials: true
+// }
+// app.use(cors(corsOptions));
 
 const boardRouter = require("./routers/board");
 const studyRouter = require("./routers/study");
