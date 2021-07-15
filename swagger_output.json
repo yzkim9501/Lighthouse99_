@@ -5,13 +5,20 @@
     "title": "등대99",
     "description": "항해99 미니프로젝트, 등대99의 API를 정리해놓은 페이지"
   },
-  "host": "localhost:3000", 
+  "host": "54.180.139.140", 
   "basePath": "/",
-  "tags": [ ],
-  "schemes": [
-    "http",
-    "https"
-  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [{
+    "Bearer": []
+  }],  
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
@@ -20,6 +27,11 @@
       "description": "send JWT"
     }
   },
+  "tags": [ ],
+  "schemes": [
+    "http",
+    "https"
+  ],
   "consumes": [
     "application/json"
   ],
@@ -106,13 +118,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {}
@@ -205,13 +210,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {}
@@ -226,13 +224,6 @@
             "description": "스터디 인덱스",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {}
@@ -267,13 +258,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -309,13 +293,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {}
@@ -372,13 +349,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -402,13 +372,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -440,14 +403,7 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
-          }
+          } 
         ],
         "responses": {
           "401": {
@@ -546,13 +502,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -572,13 +521,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -617,13 +559,6 @@
                 }
               }
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -643,13 +578,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
@@ -669,13 +597,6 @@
             "in": "path",
             "required": true,
             "type": "integer"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "description": "JWT 토큰 값 (앞에 Bearer 포함 필수)",
-            "type": "string"
           }
         ],
         "responses": {
