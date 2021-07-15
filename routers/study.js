@@ -46,15 +46,18 @@ router.get("/study/:studyId", async (req, res) => {
   const { studyId } = req.params;
   
   studyDetail = await Study.find({ studyId });
-  const leader = await User.findOne({userId:studyDetail['userId']})//리더아이디로 리더정보를 가져온다.
+  const leader = await User.findOne({userId:studyDetail[0]['userId']})//리더아이디로 리더정보를 가져온다.
   studyDetail['leaderName']=leader['nickname']
 
   const joinMember= await  StudyJoin.find({studyId})//조인한 유저에 대한 정보를 가져온다.
   let members=[]
+  members.push({id:leader['userId'],name:leader['nickname']})
   for(let i=0;i<joinMember.length;i++){
-    members.push(joinMember[i]['userName'])
+    const id=joinMember[i]['userId'];
+    const name=joinMember[i]['userName']
+    members.push({id,name})
   }
-
+  
   res.send({ detail: studyDetail ,members:members});
 })
 
@@ -173,7 +176,14 @@ router.delete("/join-study/:studyId", authMiddleware, async (req, res) => {
 router.get("/study-all-comment/:studyId", async (req, res) => {
   try {
     const { studyId } = req.params;
-    let comments = await StudyComment.find({ studyId }).sort("-date");
+    let comments = await StudyComment.find({ studyId }).sort("-date").lean();
+
+    for(let i=0;i<comments.length;i++){//찾은 스터디를 각각 한개씩 돌며 userId로 리더의 이름을 찾아서 property 설정
+      const commentAuthor = await User.findOne({userId:comments[i]['userId']})
+      comments[i]['nickname']=commentAuthor['nickname']
+    }
+
+
     res.json({ comments: comments });
   } catch (err) {
     console.error(err);
