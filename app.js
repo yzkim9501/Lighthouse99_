@@ -9,7 +9,11 @@ connect()
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://lighthouse99.club.s3-website.ap-northeast-2.amazonaws.com",
+  credentials: true
+}
+app.use(cors(corsOptions));
 
 const boardRouter = require("./routers/board");
 const studyRouter = require("./routers/study");
