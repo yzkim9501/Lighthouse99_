@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 const connect = () => {
   mongoose
-    .connect("mongodb://54.180.139.140:27017/admin", {
+    // .connect("mongodb://54.180.139.140:27017/admin", {
+    .connect("mongodb://localhost:27017/lighthouse", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
       ignoreUndefined: true,
-      user:"test",
-      pass:"test"
+      // user:"test",
+      // pass:"test"
     })
     .catch(err => console.log(err));
 };

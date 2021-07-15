@@ -10,7 +10,8 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
 const corsOptions = {
-  origin: "http://lighthouse99.club",
+  // origin: "http://lighthouse99.club",
+  origin: "*",
   credentials: true
 }
 app.use(cors(corsOptions));

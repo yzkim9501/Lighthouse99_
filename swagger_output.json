@@ -5,7 +5,7 @@
     "title": "등대99",
     "description": "항해99 미니프로젝트, 등대99의 API를 정리해놓은 페이지"
   },
-  "host": "54.180.139.140", 
+  "host": "localhost:3000", 
   "basePath": "/",
   "components": {
     "securitySchemes": {
